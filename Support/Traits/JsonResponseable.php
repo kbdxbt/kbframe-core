@@ -2,9 +2,9 @@
 
 namespace Modules\Core\Support\Traits;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Jiannei\Response\Laravel\Support\Facades\Response;
-use \Illuminate\Http\JsonResponse;
-use \Illuminate\Http\Resources\Json\JsonResource;
 
 trait JsonResponseable
 {

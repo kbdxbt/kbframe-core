@@ -94,7 +94,7 @@ class BaseRequest extends FormRequest
             return $this->route()?->getActionMethod().ucfirst($method);
         });
 
-        if (0 === strcasecmp($actionMethod, $method)) {
+        if (strcasecmp($actionMethod, $method) === 0) {
             return $defaultReturn;
         }
 

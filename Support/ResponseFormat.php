@@ -16,10 +16,6 @@ class ResponseFormat extends \Jiannei\Response\Laravel\Support\Format
             'request_id' => app('request_id'),
         ];
 
-        if (! app()->isProduction() && app()->hasDebugModeEnabled()) {
-            $formatData['debug'] = debugbar()->getData();
-        }
-
         return $this->formatDataFields($formatData, config('response.format.fields', []));
     }
 }

@@ -67,7 +67,7 @@ trait Castable
 
         $castMethod = $this->castMethodName($castType);
 
-        if (null === $value && method_exists($this, $castMethod)) {
+        if ($value === null && method_exists($this, $castMethod)) {
             return null;
         }
 
