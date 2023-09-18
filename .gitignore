@@ -7,6 +7,7 @@ psalm.xml
 vendor/
 .DS_Store
 .history/
+cghooks.lock
 composer.lock
 .php_cs.cache
 .phpunit.result.cache
