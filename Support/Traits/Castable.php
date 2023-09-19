@@ -43,24 +43,33 @@ trait Castable
             case 'int':
             case 'integer':
                 return (int) $value;
+
             case 'float':
             case 'double':
                 return (float) $value;
+
             case 'string':
                 return (string) $value;
+
             case 'bool':
             case 'boolean':
                 return (bool) $value;
+
             case 'object':
                 return $this->fromJson($value);
+
             case 'array':
                 return $this->fromJson($value, true);
+
             case 'json':
                 return $this->asJson($value);
+
             case 'date':
                 return $this->asDateTime($value)->toDateString();
+
             case 'datetime':
                 return $this->asDateTime($value)->toDateTimeString();
+
             case 'timestamp':
                 return $this->asDateTime($value)->getTimestamp();
         }
