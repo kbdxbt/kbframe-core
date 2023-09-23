@@ -51,8 +51,6 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
             'database' => ':memory:',
             'prefix' => '',
         ]);
-
-        config()->set('app.debug', true);
     }
 
     protected function defineRoutes($router): void

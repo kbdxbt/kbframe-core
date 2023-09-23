@@ -2,7 +2,7 @@
 
 namespace Modules\Core\Tests;
 
-class MemberControllerTest extends \Modules\Core\Tests\TestCase
+class MemberControllerTest extends TestCase
 {
     public function testCreate(): void
     {
