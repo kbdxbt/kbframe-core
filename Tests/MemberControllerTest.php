@@ -1,21 +1,14 @@
 <?php
 
-namespace Modules\Core\Tests;
+it('can member create', function () {
+    $response = $this->postJson('member_create');
+    $response->assertStatus(422);
 
-class MemberControllerTest extends TestCase
-{
-    public function testCreate(): void
-    {
-        $response = $this->postJson('member_create');
-        $response->assertStatus(422);
+    $response = $this->postJson('member_create', ['name' => 'test']);
+    $response->assertStatus(200);
+});
 
-        $response = $this->postJson('member_create', ['name' => 'test']);
-        $response->assertStatus(200);
-    }
-
-    public function testIndex(): void
-    {
-        $response = $this->getJson('member_list');
-        $response->assertStatus(200);
-    }
-}
+it('can member list', function () {
+    $response = $this->getJson('member_list');
+    $response->assertStatus(200);
+});
