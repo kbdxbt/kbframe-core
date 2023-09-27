@@ -45,14 +45,14 @@ class BaseRequest extends FormRequest
         return $this->call(__FUNCTION__, \func_get_args(), $this->createDefaultValidator($factory));
     }
 
-    protected function failedValidation(Validator $validator)
+    protected function failedValidation(Validator $validator): void
     {
-        return $this->call(__FUNCTION__, $args = \func_get_args(), parent::{__FUNCTION__}(...$args));
+        $this->call(__FUNCTION__, $args = \func_get_args(), parent::{__FUNCTION__}(...$args));
     }
 
-    protected function failedAuthorization()
+    protected function failedAuthorization(): void
     {
-        return $this->call(__FUNCTION__, $args = \func_get_args(), parent::{__FUNCTION__}(...$args));
+        $this->call(__FUNCTION__, $args = \func_get_args(), parent::{__FUNCTION__}(...$args));
     }
 
     protected function withValidator(Validator $validator)
@@ -91,6 +91,7 @@ class BaseRequest extends FormRequest
                 throw new \InvalidArgumentException("Can't call the method[$method].");
             }
 
+            /** @phpstan-ignore-next-line */
             return $this->route()?->getActionMethod().ucfirst($method);
         });
 

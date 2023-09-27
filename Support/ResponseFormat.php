@@ -11,7 +11,7 @@ class ResponseFormat extends \Jiannei\Response\Laravel\Support\Format
             'code' => $code,
             'message' => $this->formatMessage($code, $message),
             'data' => $data ?: (object) $data,
-            'error' => $errors ?: (object) [],
+            'error' => $errors ?: (object) [], /** @phpstan-ignore-line */
             'request_time' => request()->server('REQUEST_TIME'),
             'request_id' => app('request_id'),
         ];
