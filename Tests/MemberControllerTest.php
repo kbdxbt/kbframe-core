@@ -1,14 +1,12 @@
 <?php
 
-it('can member create', function () {
-    $response = \Pest\Laravel\postJson('member_create');
-    $response->assertStatus(422);
+namespace Modules\Core\Tests;
 
-    $response = \Pest\Laravel\postJson('member_create', ['name' => 'test']);
-    $response->assertStatus(200);
+it('can member create', function () {
+    $this->postJson('member_create')->assertStatus(422);
+    $this->postJson('member_create', ['name' => 'test'])->assertStatus(200);
 });
 
 it('can member list', function () {
-    $response = \Pest\Laravel\getJson('member_list');
-    $response->assertStatus(200);
+    $this->getJson('member_list')->assertStatus(200);
 });
