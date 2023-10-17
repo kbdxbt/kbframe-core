@@ -20,16 +20,12 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         $this->setUpDatabase();
         $this->withFactories(__DIR__.'/Factories/');
         $this->seed(MemberSeeder::class);
+        $this->clearTestModulePath();
     }
 
     protected function tearDown(): void
     {
-        if (is_dir($this->modulePath.'kbframe-test')) {
-            @rmdir($this->modulePath.'kbframe-test');
-        }
-        if (is_dir($this->modulePath)) {
-            File::deleteDirectory($this->modulePath);
-        }
+        $this->clearTestModulePath();
     }
 
     protected function setUpDatabase(): void
@@ -86,5 +82,15 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
 
         $app['config']->set('modules.scan.enabled', true);
         $app['config']->set('modules.scan.paths', [__DIR__.'/../vendor/kbdxbt/*', __DIR__.'/../Tests/Modules/*']);
+    }
+
+    protected function clearTestModulePath(): void
+    {
+        if (is_dir($this->modulePath.'kbframe-test')) {
+            @rmdir($this->modulePath.'kbframe-test');
+        }
+        if (is_dir($this->modulePath)) {
+            File::deleteDirectory($this->modulePath);
+        }
     }
 }
