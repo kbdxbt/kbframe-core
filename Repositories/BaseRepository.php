@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Core\Repositories;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Core\Support\Traits\CreateStaticable;
 
 abstract class BaseRepository
@@ -43,7 +43,7 @@ abstract class BaseRepository
     {
         $model = app()->make($this->model());
 
-        if (!$model instanceof Model) {
+        if (! $model instanceof Model) {
             throw new \InvalidArgumentException("Class {$this->model()} must be an instance of Illuminate\\Database\\Eloquent\\Model");
         }
 

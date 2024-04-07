@@ -10,6 +10,6 @@ use Modules\Core\Support\Traits\JsonResponseable;
 
 class BaseController extends Controller
 {
-    use JsonResponseable;
     use CheckActionTrait;
+    use JsonResponseable;
 }

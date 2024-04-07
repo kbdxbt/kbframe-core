@@ -115,7 +115,7 @@ class CoreServiceProvider extends PackageServiceProvider
      */
     protected function registerRequestId(): void
     {
-        $this->app->singleton('request_id', fn() => (string)Str::uuid());
+        $this->app->singleton('request_id', fn () => (string) Str::uuid());
     }
 
     protected function registerDefaultConfig()
@@ -131,10 +131,10 @@ class CoreServiceProvider extends PackageServiceProvider
      */
     protected function registerMacros(): void
     {
-        collect(glob(__DIR__ . '/../Support/Macros/QueryBuilder/*QueryBuilderMacro.php'))
+        collect(glob(__DIR__.'/../Support/Macros/QueryBuilder/*QueryBuilderMacro.php'))
             ->each(function ($file): void {
                 $queryBuilderMacro = $this->app->make(
-                    "\\Modules\\{$this->moduleName}\\Support\\Macros\\QueryBuilder\\" . pathinfo($file, PATHINFO_FILENAME)
+                    "\\Modules\\{$this->moduleName}\\Support\\Macros\\QueryBuilder\\".pathinfo($file, PATHINFO_FILENAME)
                 );
                 QueryBuilder::mixin($queryBuilderMacro);
                 EloquentBuilder::mixin($queryBuilderMacro);
@@ -177,22 +177,22 @@ class CoreServiceProvider extends PackageServiceProvider
     {
         foreach (Module::scan() as $module) {
             /** @phpstan-ignore-line */
-            $rulePath = $module->getPath() . '/Rules';
-            if (!is_dir($rulePath)) {
+            $rulePath = $module->getPath().'/Rules';
+            if (! is_dir($rulePath)) {
                 continue;
             }
 
             foreach ((new Finder())->in($rulePath)->files() as $ruleFile) {
-                $ruleClass = '\\Modules\\' . $module->getName() . '\\Rules\\' . pathinfo($ruleFile->getFilename(), PATHINFO_FILENAME);
+                $ruleClass = '\\Modules\\'.$module->getName().'\\Rules\\'.pathinfo($ruleFile->getFilename(), PATHINFO_FILENAME);
 
                 if (is_subclass_of($ruleClass, Rule::class)
-                    && !(new \ReflectionClass($ruleClass))->isAbstract()) {
+                    && ! (new \ReflectionClass($ruleClass))->isAbstract()) {
                     Validator::{is_subclass_of($ruleClass, ImplicitRule::class) ? 'extendImplicit' : 'extend'}(
-                        (string)$ruleClass::name(),
+                        (string) $ruleClass::name(),
                         function (
-                            string                           $attribute,
-                                                             $value,
-                            array                            $parameters,
+                            string $attribute,
+                            $value,
+                            array $parameters,
                             \Illuminate\Validation\Validator $validator
                         ) use ($ruleClass) {
                             return tap(new $ruleClass(...$parameters), function (Rule $rule) use ($validator): void {

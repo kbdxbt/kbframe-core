@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Modules\Core\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
 
 /**
  * @method static \Illuminate\Database\Eloquent\Builder findWhere(array $where, $columns = ['*'])
@@ -29,7 +28,7 @@ trait Findable
     {
         foreach ($where as $field => $value) {
             if (is_array($value)) {
-                list($field, $condition, $val) = $value;
+                [$field, $condition, $val] = $value;
                 //smooth input
                 $condition = preg_replace('/\s\s+/', ' ', trim($condition));
 
@@ -38,71 +37,136 @@ trait Findable
                 if (count($operator) > 1) {
                     $condition = $operator[0];
                     $operator = $operator[1];
-                } else $operator = null;
+                } else {
+                    $operator = null;
+                }
+
                 switch (strtoupper($condition)) {
                     case 'IN':
-                        if (!is_array($val)) throw new \InvalidArgumentException("Input {$val} mus be an array");
+                        if (! is_array($val)) {
+                            throw new \InvalidArgumentException("Input {$val} mus be an array");
+                        }
                         $query->whereIn($field, $val);
+
                         break;
+
                     case 'NOTIN':
-                        if (!is_array($val)) throw new \InvalidArgumentException("Input {$val} mus be an array");
+                        if (! is_array($val)) {
+                            throw new \InvalidArgumentException("Input {$val} mus be an array");
+                        }
                         $query->whereNotIn($field, $val);
+
                         break;
+
                     case 'DATE':
-                        if (!$operator) $operator = '=';
+                        if (! $operator) {
+                            $operator = '=';
+                        }
                         $query->whereDate($field, $operator, $val);
+
                         break;
+
                     case 'DAY':
-                        if (!$operator) $operator = '=';
+                        if (! $operator) {
+                            $operator = '=';
+                        }
                         $query->whereDay($field, $operator, $val);
+
                         break;
+
                     case 'MONTH':
-                        if (!$operator) $operator = '=';
+                        if (! $operator) {
+                            $operator = '=';
+                        }
                         $query->whereMonth($field, $operator, $val);
+
                         break;
+
                     case 'YEAR':
-                        if (!$operator) $operator = '=';
+                        if (! $operator) {
+                            $operator = '=';
+                        }
                         $query->whereYear($field, $operator, $val);
+
                         break;
+
                     case 'EXISTS':
-                        if (!($val instanceof \Closure)) throw new \InvalidArgumentException("Input {$val} must be closure function");
+                        if (! ($val instanceof \Closure)) {
+                            throw new \InvalidArgumentException("Input {$val} must be closure function");
+                        }
                         $query->whereExists($val);
+
                         break;
+
                     case 'HAS':
-                        if (!($val instanceof \Closure)) throw new \InvalidArgumentException("Input {$val} must be closure function");
+                        if (! ($val instanceof \Closure)) {
+                            throw new \InvalidArgumentException("Input {$val} must be closure function");
+                        }
                         $query->whereHas($field, $val);
+
                         break;
+
                     case 'HASMORPH':
-                        if (!($val instanceof \Closure)) throw new \InvalidArgumentException("Input {$val} must be closure function");
+                        if (! ($val instanceof \Closure)) {
+                            throw new \InvalidArgumentException("Input {$val} must be closure function");
+                        }
                         $query->whereHasMorph($field, $val);
+
                         break;
+
                     case 'DOESNTHAVE':
-                        if (!($val instanceof \Closure)) throw new \InvalidArgumentException("Input {$val} must be closure function");
+                        if (! ($val instanceof \Closure)) {
+                            throw new \InvalidArgumentException("Input {$val} must be closure function");
+                        }
                         $query->whereDoesntHave($field, $val);
+
                         break;
+
                     case 'DOESNTHAVEMORPH':
-                        if (!($val instanceof \Closure)) throw new \InvalidArgumentException("Input {$val} must be closure function");
+                        if (! ($val instanceof \Closure)) {
+                            throw new \InvalidArgumentException("Input {$val} must be closure function");
+                        }
                         $query->whereDoesntHaveMorph($field, $val);
+
                         break;
+
                     case 'BETWEEN':
-                        if (!is_array($val)) throw new \InvalidArgumentException("Input {$val} mus be an array");
+                        if (! is_array($val)) {
+                            throw new \InvalidArgumentException("Input {$val} mus be an array");
+                        }
                         $query->whereBetween($field, $val);
+
                         break;
+
                     case 'BETWEENCOLUMNS':
-                        if (!is_array($val)) throw new \InvalidArgumentException("Input {$val} mus be an array");
+                        if (! is_array($val)) {
+                            throw new \InvalidArgumentException("Input {$val} mus be an array");
+                        }
                         $query->whereBetweenColumns($field, $val);
+
                         break;
+
                     case 'NOTBETWEEN':
-                        if (!is_array($val)) throw new \InvalidArgumentException("Input {$val} mus be an array");
+                        if (! is_array($val)) {
+                            throw new \InvalidArgumentException("Input {$val} mus be an array");
+                        }
                         $query->whereNotBetween($field, $val);
+
                         break;
+
                     case 'NOTBETWEENCOLUMNS':
-                        if (!is_array($val)) throw new \InvalidArgumentException("Input {$val} mus be an array");
+                        if (! is_array($val)) {
+                            throw new \InvalidArgumentException("Input {$val} mus be an array");
+                        }
                         $query->whereNotBetweenColumns($field, $val);
+
                         break;
+
                     case 'RAW':
                         $query->whereRaw($val);
+
                         break;
+
                     default:
                         $query->where($field, $condition, $val);
                 }

@@ -11,5 +11,6 @@ cghooks.lock
 composer.lock
 .php_cs.cache
 .phpunit.result.cache
+.phpunit.cache
 tests.php
 .php-cs-fixer.cache
