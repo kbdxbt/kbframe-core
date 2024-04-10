@@ -373,17 +373,17 @@ if (! function_exists('amis')) {
     function amis($type = null)
     {
         if (filled($type)) {
-            return \Modules\Common\Renderers\Component::make()->setType($type);
+            return \Modules\Core\Renderers\Component::make()->setType($type);
         }
 
-        return \Modules\Common\Renderers\Amis::make();
+        return \Modules\Core\Renderers\Amis::make();
     }
 }
 
 if (! function_exists('amisMake')) {
     function amisMake()
     {
-        return \Modules\Common\Renderers\Amis::make();
+        return \Modules\Core\Renderers\Amis::make();
     }
 }
 

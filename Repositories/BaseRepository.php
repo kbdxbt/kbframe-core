@@ -43,7 +43,7 @@ abstract class BaseRepository
     {
         $model = app()->make($this->model());
 
-        if (! $model instanceof Model) {
+        if (!$model instanceof Model) {
             throw new \InvalidArgumentException("Class {$this->model()} must be an instance of Illuminate\\Database\\Eloquent\\Model");
         }
 
@@ -53,6 +53,32 @@ abstract class BaseRepository
     public function query(): Builder
     {
         return $this->getModel()->query();
+    }
+
+    public function create($attributes): bool
+    {
+        return $this->getModel()->fill($attributes)->save();
+    }
+
+    public function update($attributes, $id): bool
+    {
+        $model = $this->query()->findOrFail($id);
+
+        return $model->fill($attributes)->save();
+    }
+
+    public function delete($condition, $isForceDelete = false): bool
+    {
+        $model = $this->query();
+        $isForceDelete && $model->forceDelete();
+
+        if (is_array($condition)) {
+            $result = $model->where($condition)->delete();
+        } else {
+            $result = $model->delete($condition);
+        }
+
+        return $result;
     }
 
     public static function __callStatic($method, $arguments)
