@@ -67,20 +67,6 @@ abstract class BaseRepository
         return $model->fill($attributes)->save();
     }
 
-    public function delete($condition, $isForceDelete = false): bool
-    {
-        $model = $this->query();
-        $isForceDelete && $model->forceDelete();
-
-        if (is_array($condition)) {
-            $result = $model->where($condition)->delete();
-        } else {
-            $result = $model->delete($condition);
-        }
-
-        return $result;
-    }
-
     public static function __callStatic($method, $arguments)
     {
         return call_user_func_array([self::make(), $method], $arguments);
