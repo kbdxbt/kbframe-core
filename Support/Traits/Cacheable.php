@@ -2,24 +2,29 @@
 
 namespace Modules\Core\Support\Traits;
 
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Cache\CacheManager;
 
 trait Cacheable
 {
     /** @var mixed */
     protected $key;
 
-    protected $cache;
-
     protected string $cachePrefix;
 
-    public function getCache($driver = 'redis'): \Illuminate\Contracts\Cache\Repository
+    protected static CacheManager|null $cache = null;
+
+    public static function setCacheInstance(CacheManager $cache): void
     {
-        if ($this->cache instanceof \Illuminate\Contracts\Cache\Repository) {
-            return $this->cache;
+        self::$cache = $cache;
+    }
+
+    public static function getCacheInstance(): CacheManager
+    {
+        if (self::$cache === null) {
+            self::$cache = app('cache');
         }
 
-        return $this->cache = Cache::driver($driver);
+        return self::$cache;
     }
 
     protected function getCacheKey(): string
