@@ -4,18 +4,20 @@ namespace Modules\Core\Support;
 
 class ResponseFormat extends \Jiannei\Response\Laravel\Support\Format
 {
-    public function data(?array $data, ?string $message, int $code, $errors = null): array
+    public function data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, $error = null): static
     {
-        $formatData = [
-            'status' => $this->formatStatus($code),
-            'code' => $code,
-            'message' => $this->formatMessage($code, $message),
-            'data' => $data ?: (object) $data,
-            'error' => $errors ?: (object) [], /** @phpstan-ignore-line */
-            'request_time' => request()->server('REQUEST_TIME'),
-            'request_id' => app('request_id'),
-        ];
+        return tap($this, function () use ($data, $message, $code, $error) {
+            $this->statusCode = $this->formatStatusCode($this->formatBusinessCode($code), $data);
 
-        return $this->formatDataFields($formatData, config('response.format.fields', []));
+            $this->data = $this->formatDataFields([
+                'status' => $this->formatStatus($code),
+                'code' => $this->formatBusinessCode($code),
+                'message' => $this->formatMessage($this->formatBusinessCode($code), $message),
+                'data' => $this->formatData($data),
+                'error' => $this->formatError($error),
+                'request_time' => request()->server('REQUEST_TIME'),
+                'request_id' => app('request_id'),
+            ]);
+        });
     }
 }

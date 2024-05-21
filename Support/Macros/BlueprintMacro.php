@@ -44,9 +44,9 @@ class BlueprintMacro
     public function operators(): callable
     {
         return function () {
-            $this->string('created_by')->nullable();
+            $this->string('creator_id')->nullable();
 
-            $this->string('updated_by')->nullable();
+            $this->string('updater_id')->nullable();
         };
     }
 

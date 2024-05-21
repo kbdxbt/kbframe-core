@@ -55,7 +55,7 @@ abstract class BaseRepository
         return $this->getModel()->query();
     }
 
-    public function create($attributes): bool
+    public function create(array $attributes): bool
     {
         return $this->getModel()->fill($attributes)->save();
     }
@@ -65,6 +65,11 @@ abstract class BaseRepository
         $model = $this->query()->findOrFail($id);
 
         return $model->fill($attributes)->save();
+    }
+
+    public function delete(array $ids): int
+    {
+        return $this->getModel()::destroy($ids);
     }
 
     public static function __callStatic($method, $arguments)
