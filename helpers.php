@@ -405,3 +405,17 @@ if (! function_exists('pp')) {
         }
     }
 }
+
+if (! function_exists('split_to_array')) {
+    function split_to_array($value): array
+    {
+        if (empty($value)) return [];
+        if (is_array($value)) return $value;
+
+        $delimiter = ',';
+        return str($value)
+            ->replace([" ", "\r\n", "\r", "\n", PHP_EOL, "，", "/", ";", "。", "；", ","], $delimiter)
+            ->explode($delimiter)
+            ->filter()->unique()->values()->toArray();
+    }
+}
