@@ -32,7 +32,7 @@ trait UploadTrait
 
     protected function upload(UploadedFile $file, $path)
     {
-        $res = (new Upload($file, $this->disk))->upload($path);
+        $res = (new Upload($this->disk))->upload($file, $path);
 
         return Response::success(['url' => $res['url']]);
     }

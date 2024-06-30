@@ -2,31 +2,45 @@
 
 namespace Modules\Core\Support;
 
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Modules\System\Enums\StorageModeEnum;
 
 class Upload
 {
-    protected $driver;
+    protected Filesystem $filesystem;
 
-    protected $filesystem;
-
-    public function __construct(
-        protected UploadedFile $file,
-        $driver
-    ) {
-        $this->driver = $driver;
+    public function __construct($driver)
+    {
         $this->filesystem = Storage::disk($driver);
     }
 
-    public function formatFileName($path = 'default', $filename = '', $suffix = '', $format = '')
+    public function formatFileName($path = 'default', $filepath = '', $filename = '', $suffix = '', $format = ''): array|string
     {
-        $suffix = $suffix ?: $this->file->extension();
-        $filename = $filename ?: $this->file->getClientOriginalName();
+        if (!$format) {
+            $format = '{path}/{date}/{filename}_{filesha1}{.suffix}';
+
+            if (\array_key_exists('format', $config = $this->filesystem->getConfig())) {
+                $format = $config['format'];
+            }
+        }
+
+        return self::generateFormatFileName($path, $filepath, $filename, $suffix, $format);
+    }
+
+    public static function generateFormatFileName($path = 'default', $filepath = '', $filename = '', $suffix = '', $format = ''): array|string
+    {
+        if (!$format) {
+            $format = '{path}/{date}/{filename}_{filesha1}{.suffix}';
+        }
 
         $replaceArr = [
             '{path}' => $path,
+            '{date}' => date('ymd'),
+            '{datetime}' => date('ymdHis'),
             '{year}' => date('Y'),
             '{mon}' => date('m'),
             '{day}' => date('d'),
@@ -37,41 +51,50 @@ class Upload
             '{random}' => Str::random(),
             '{random32}' => Str::random(32),
             '{uniqid}' => uniqid(),
-            '{filename}' => substr($filename, 0, 15),
+            '{filename}' => substr($filename, 0, 30),
             '{suffix}' => $suffix,
-            '{.suffix}' => $suffix ? '.'.$suffix : '',
-            '{filesha1}' => hash_file('sha1', $this->file->path()),
-            '{filemd5}' => md5($this->file->path()),
+            '{.suffix}' => $suffix ? '.' . $suffix : '',
+            '{filesha1}' => $filepath ? hash_file('sha1', $filepath) : '',
+            '{filemd5}' => md5($filepath),
         ];
-
-        if (! $format) {
-            $format = '{path}/{year}{mon}{day}/{filename}{filesha1}{.suffix}';
-
-            if (\array_key_exists('format', $config = $this->filesystem->getConfig())) {
-                $format = $config['format'];
-            }
-        }
 
         return str_replace(array_keys($replaceArr), array_values($replaceArr), $format);
     }
 
-    public function upload($path)
+    public function upload(UploadedFile $file, $path): array
     {
-        $filename = $this->formatFileName($path);
+        $filePath = $this->formatFileName(
+            $path,
+            $file->path(),
+            pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+            $file->extension()
+        );
 
-        $params = [
-            'filename' => $filename,
-            'name' => substr(htmlspecialchars(strip_tags($this->file->getClientOriginalName())), 0, 100),
-            'size' => $this->file->getSize(),
-            'mimetype' => $this->file->getMimeType(),
-            'storage' => $this->driver,
-            'sha1' => hash_file('sha1', $this->file->path()),
-        ];
+        $uploadFileRepository = \Modules\System\Repositories\UploadFileRepository::make();
+        $hash = md5_file($file);
+        $uploadFileModel = $uploadFileRepository->query()->firstWhere('hash', $hash)?->toArray();
 
-        // db 查询
+        if (!$uploadFileModel) {
 
-        $params['url'] = $this->filesystem->url($this->filesystem->putFileAs('', $this->file, $filename));
+            $url = $this->filesystem->url($this->filesystem->putFileAs('', $file, $filePath));
 
-        return $params;
+            $uploadFileModel = $uploadFileRepository->getModel()->fill([
+                'storage_mode' => StorageModeEnum::fromValue($this->filesystem->getConfig()['driver']),
+                'origin_name' => File::basename($file),
+                'object_name' => File::basename($filePath),
+                'hash' => $hash,
+                'mime_type' => File::mimeType($file),
+                'storage_path' => $filePath,
+                'suffix' => File::extension($filePath),
+                'size_byte' => File::size($file),
+                'size_info' => format_bytes(File::size($file)),
+                'url' => $url,
+                'created_by' => request()->userId(),
+            ]);
+
+            $uploadFileModel->save();
+        }
+
+        return $uploadFileModel;
     }
 }

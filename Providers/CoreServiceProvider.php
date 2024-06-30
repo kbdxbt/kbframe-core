@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Core\Providers;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Contracts\Validation\DataAwareRule;
@@ -31,6 +32,7 @@ use Illuminate\Support\Stringable;
 use Illuminate\Support\Traits\Conditionable;
 use Modules\Core\Http\Middleware\ProfileJsonResponse;
 use Modules\Core\Rules\Rule;
+use Modules\Core\Services\LengthAwarePaginatorService;
 use Modules\Core\Support\Macros\BlueprintMacro;
 use Modules\Core\Support\Macros\CollectionMacro;
 use Modules\Core\Support\Macros\CommandMacro;
@@ -124,6 +126,12 @@ class CoreServiceProvider extends PackageServiceProvider
         Schema::defaultStringLength(191);
 
         Log::shareContext(['request_id' => app('request_id')]);
+
+        Carbon::serializeUsing(static fn (Carbon $timestamp) => $timestamp->format('Y-m-d H:i:s'));
+
+        $this->app->bind('Illuminate\Pagination\LengthAwarePaginator', function ($app, $options) {
+            return new LengthAwarePaginatorService($options['items'], $options['total'], $options['perPage'], $options['currentPage'], $options['options']);
+        });
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Modules\Core\Rules;
 
 use Illuminate\Contracts\Validation\ImplicitRule;
 use Illuminate\Contracts\Validation\ValidatorAwareRule;
+use Illuminate\Support\Arr;
 use Modules\Core\Rules\Concerns\ValidatorAware;
 
 final class DefaultRule extends Rule implements ImplicitRule, ValidatorAwareRule
@@ -31,7 +32,7 @@ final class DefaultRule extends Rule implements ImplicitRule, ValidatorAwareRule
     {
         if ($value === null) {
             $data = $this->validator->getData();
-            $data[$attribute] = $this->default;
+            Arr::set($data, $attribute, $this->default);
             $this->validator->setData($data);
         }
 
