@@ -97,4 +97,11 @@ class QueryBuilderMacro
             return $result;
         };
     }
+
+    public function pageList(): callable
+    {
+        return function ($params) {
+            return $this->paginate(perPage: $params['page_size'], page: $params['page']);
+        };
+    }
 }

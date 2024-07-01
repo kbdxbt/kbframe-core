@@ -162,4 +162,11 @@ class RequestMacro
             return $routes->merge($fallbacks)->first(fn (Route $route) => $route->matches($this, $includingMethod));
         };
     }
+
+    public function validateInput(): callable
+    {
+        return function () {
+            return Arr::collapse([$this->input(), $this->validated()]);
+        };
+    }
 }

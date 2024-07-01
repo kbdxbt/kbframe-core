@@ -55,7 +55,7 @@ abstract class BaseRepository
         return $this->getModel()->query();
     }
 
-    public function create(array $attributes): bool
+    public function create($attributes): bool
     {
         return $this->getModel()->fill($attributes)->save();
     }
@@ -67,9 +67,39 @@ abstract class BaseRepository
         return $model->fill($attributes)->save();
     }
 
-    public function delete(array $ids): int
+    public function delete($keyValue, $isForce = false): void
     {
-        return $this->getModel()::destroy($ids);
+        $keyValues = split_to_array($keyValue);
+
+        if ($isForce) {
+            $this->query()->whereIn($this->getModel()->getKeyName(), $keyValues)->forceDelete();
+        } else {
+            $this->query()->whereIn($this->getModel()->getKeyName(), $keyValues)->delete();
+        }
+    }
+
+    public function recovery($ids): void
+    {
+        $ids = split_to_array($ids);
+
+        $this->getModel()::withTrashed()->whereIn($this->getModel()->getKeyName(), $ids)->restore();
+    }
+
+    public function batchUpdateByKeyName($keyValue, $attributes): bool
+    {
+        $keyValues = split_to_array($keyValue);
+
+        return $this->getModel()->update($attributes, [$this->getKeyName() => $keyValues]);
+    }
+
+    public function getId(): int
+    {
+        return $this->getModel()?->id;
+    }
+
+    public function getKeyName(): string
+    {
+        return $this->getModel()->getKeyName();
     }
 
     public static function __callStatic($method, $arguments)
