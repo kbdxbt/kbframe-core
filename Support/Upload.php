@@ -31,7 +31,7 @@ class Upload
         return self::generateFormatFileName($path, $filepath, $filename, $suffix, $format);
     }
 
-    public static function generateFormatFileName($path = 'default', $filepath = '', $filename = '', $suffix = '', $format = ''): array|string
+    public static function generateFormatFileName($path = 'default', $filepath = '', $filename = '', $suffix = '', $format = ''): string
     {
         if (!$format) {
             $format = '{path}/{date}/{filename}_{filesha1}{.suffix}';
@@ -70,7 +70,7 @@ class Upload
             $file->extension()
         );
 
-        $uploadFileRepository = \Modules\System\Repositories\UploadFileRepository::make();
+        $uploadFileRepository = \Modules\System\Repositories\UploadRepository::make();
         $hash = md5_file($file);
         $uploadFileModel = $uploadFileRepository->query()->firstWhere('hash', $hash)?->toArray();
 
