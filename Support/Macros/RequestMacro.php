@@ -166,7 +166,7 @@ class RequestMacro
     public function validateInput(): callable
     {
         return function () {
-            return Arr::collapse([$this->input(), $this->validated()]);
+            return array_replace_recursive($this->input(), $this->validated());
         };
     }
 }

@@ -419,3 +419,34 @@ if (! function_exists('split_to_array')) {
             ->filter()->unique()->values()->toArray();
     }
 }
+
+if (! function_exists('export_csv')) {
+    function export_csv($list, $filename): bool
+    {
+        if (!is_array($list)) {
+            return false;
+        }
+
+        ob_start();
+
+        $fp = fopen($filename, 'a');
+
+        if (!empty($list)) {
+            $size = ceil(count($list) / 500);
+
+            for ($i = 0; $i < $size; $i++) {
+                $buffer = array_slice($list, $i * 500, 500);
+
+                foreach ($buffer as $k => $row) {
+                    fputcsv($fp, to_transform_array($row));
+                    unset($data, $buffer[$k]);
+                }
+            }
+        }
+
+        fclose($fp);
+        ob_end_clean();
+
+        return true;
+    }
+}

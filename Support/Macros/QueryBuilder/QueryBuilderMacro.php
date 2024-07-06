@@ -101,7 +101,14 @@ class QueryBuilderMacro
     public function pageList(): callable
     {
         return function ($params) {
-            return $this->paginate(perPage: $params['page_size'], page: $params['page']);
+            return $this->paginate(perPage: $params['page_size'] ?? 15, page: $params['page'] ?? null);
+        };
+    }
+
+    public function cursorPageList(): callable
+    {
+        return function ($params) {
+            return $this->cursorPaginate(perPage: $params['page_size'] ?? 15, cursor: $params['cursor'] ?? null);
         };
     }
 }

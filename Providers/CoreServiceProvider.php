@@ -32,6 +32,7 @@ use Illuminate\Support\Stringable;
 use Illuminate\Support\Traits\Conditionable;
 use Modules\Core\Http\Middleware\ProfileJsonResponse;
 use Modules\Core\Rules\Rule;
+use Modules\Core\Services\CursorPaginatorService;
 use Modules\Core\Services\LengthAwarePaginatorService;
 use Modules\Core\Support\Macros\BlueprintMacro;
 use Modules\Core\Support\Macros\CollectionMacro;
@@ -131,6 +132,9 @@ class CoreServiceProvider extends PackageServiceProvider
 
         $this->app->bind('Illuminate\Pagination\LengthAwarePaginator', function ($app, $options) {
             return new LengthAwarePaginatorService($options['items'], $options['total'], $options['perPage'], $options['currentPage'], $options['options']);
+        });
+        $this->app->bind('Illuminate\Pagination\CursorPaginator', function ($app, $options) {
+            return new CursorPaginatorService($options['items'], $options['perPage'], $options['cursor'], $options['options']);
         });
     }
 

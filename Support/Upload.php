@@ -95,6 +95,6 @@ class Upload
             $uploadFileModel->save();
         }
 
-        return $uploadFileModel;
+        return (array) $uploadFileModel;
     }
 }
