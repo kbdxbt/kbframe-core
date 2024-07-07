@@ -135,13 +135,6 @@ if (! function_exists('validate')) {
     }
 }
 
-if (! function_exists('array_filter_filled')) {
-    function array_filter_filled(array $array): array
-    {
-        return array_filter($array, fn ($item) => filled($item));
-    }
-}
-
 if (! function_exists('call')) {
     function call($callback, array $parameters = [], ?string $defaultMethod = null): void
     {
@@ -194,45 +187,10 @@ if (! function_exists('write_log')) {
         $path = storage_path('logs'.DIRECTORY_SEPARATOR.$path.DIRECTORY_SEPARATOR.$log_file);
 
         if (! is_string($data)) {
-            $data = (string) json_encode(to_transform_array($data), JSON_UNESCAPED_UNICODE);
+            $data = (string) json_encode(\Illuminate\Support\Arr::transform($data), JSON_UNESCAPED_UNICODE);
         }
 
         Log::build(array_merge(['driver' => 'single', 'path' => $path], $config))->info($data, $context);
-    }
-}
-
-if (! function_exists('to_transform_array')) {
-    function to_transform_array($value, bool $filter = true): array
-    {
-        if ($value === null || $value === '' || $value === []) {
-            return [];
-        }
-
-        if ($value instanceof \Closure) {
-            $value = $value();
-        }
-
-        if (is_array($value)) {
-        } elseif ($value instanceof Jsonable) {
-            $value = json_decode($value->toJson(), true);
-        } elseif ($value instanceof Arrayable) {
-            $value = $value->toArray();
-        } elseif (is_string($value)) {
-            $array = null;
-
-            try {
-                $array = json_decode($value, true);
-            } catch (\Throwable $e) {
-            }
-
-            $value = is_array($array) ? $array : explode(',', $value);
-        } else {
-            $value = (array) $value;
-        }
-
-        return $filter ? array_filter($value, function ($v) {
-            return $v !== '' && $v !== null;
-        }) : $value;
     }
 }
 
@@ -324,51 +282,6 @@ if (! function_exists('dd_to_array')) {
     }
 }
 
-if (! function_exists('array_reduce_with_keys')) {
-    function array_reduce_with_keys(array $array, callable $callback, $carry = null): mixed
-    {
-        foreach ($array as $key => $value) {
-            $carry = $callback($carry, $value, $key);
-        }
-
-        return $carry;
-    }
-}
-
-if (! function_exists('array_map_with_keys')) {
-    function array_map_with_keys(callable $callback, array $array): array
-    {
-        $result = [];
-
-        foreach ($array as $key => $value) {
-            $assoc = $callback($value, $key);
-
-            foreach ($assoc as $mapKey => $mapValue) {
-                $result[$mapKey] = $mapValue;
-            }
-        }
-
-        return $result;
-    }
-}
-
-if (! function_exists('array2tree')) {
-    function array2tree(array $list, int $parentId = 0): array
-    {
-        $data = [];
-        foreach ($list as $key => $item) {
-            if ($item['parent_id'] == $parentId) {
-                $children = array2tree($list, (int) $item['id']);
-                ! empty($children) && $item['children'] = $children;
-                $data[] = $item;
-                unset($list[$key]);
-            }
-        }
-
-        return $data;
-    }
-}
-
 if (! function_exists('amis')) {
     function amis($type = null)
     {
@@ -406,20 +319,6 @@ if (! function_exists('pp')) {
     }
 }
 
-if (! function_exists('split_to_array')) {
-    function split_to_array($value): array
-    {
-        if (empty($value)) return [];
-        if (is_array($value)) return $value;
-
-        $delimiter = ',';
-        return str($value)
-            ->replace([" ", "\r\n", "\r", "\n", PHP_EOL, "，", "/", ";", "。", "；", ","], $delimiter)
-            ->explode($delimiter)
-            ->filter()->unique()->values()->toArray();
-    }
-}
-
 if (! function_exists('export_csv')) {
     function export_csv($list, $filename): bool
     {
@@ -438,7 +337,7 @@ if (! function_exists('export_csv')) {
                 $buffer = array_slice($list, $i * 500, 500);
 
                 foreach ($buffer as $k => $row) {
-                    fputcsv($fp, to_transform_array($row));
+                    fputcsv($fp, array_values(\Illuminate\Support\Arr::transform($row)));
                     unset($data, $buffer[$k]);
                 }
             }

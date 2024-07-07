@@ -54,4 +54,19 @@ class StrMacro
             return $acronym;
         };
     }
+
+    public static function split(): callable
+    {
+        return function($value, $replaceArr = [" ", "\r\n", "\r", "\n", PHP_EOL, "，", "/", ";", "。", "；", ","]): array
+        {
+            if (empty($value)) return [];
+            if (is_array($value)) return $value;
+
+            $delimiter = ',';
+            return str($value)
+                ->replace($replaceArr, $delimiter)
+                ->explode($delimiter)
+                ->filter()->unique()->values()->toArray();
+        };
+    }
 }

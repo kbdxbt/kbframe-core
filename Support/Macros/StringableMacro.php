@@ -55,4 +55,13 @@ class StringableMacro
             );
         };
     }
+
+    public function split(): callable
+    {
+        return function (array $replaceArr = [" ", "\r\n", "\r", "\n", PHP_EOL, "，", "/", ";", "。", "；", ","]) {
+            return new Stringable(
+                Str::split($this->value, $replaceArr)
+            );
+        };
+    }
 }

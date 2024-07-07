@@ -22,6 +22,7 @@ use Illuminate\Database\Schema\Grammars\Grammar;
 use Illuminate\Http\Request;
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -34,6 +35,7 @@ use Modules\Core\Http\Middleware\ProfileJsonResponse;
 use Modules\Core\Rules\Rule;
 use Modules\Core\Services\CursorPaginatorService;
 use Modules\Core\Services\LengthAwarePaginatorService;
+use Modules\Core\Support\Macros\ArrMacro;
 use Modules\Core\Support\Macros\BlueprintMacro;
 use Modules\Core\Support\Macros\CollectionMacro;
 use Modules\Core\Support\Macros\CommandMacro;
@@ -153,6 +155,7 @@ class CoreServiceProvider extends PackageServiceProvider
                 Relation::mixin($queryBuilderMacro);
             });
 
+        Arr::mixin($this->app->make(ArrMacro::class));
         Blueprint::mixin($this->app->make(BlueprintMacro::class));
         Collection::mixin($this->app->make(CollectionMacro::class));
         Command::mixin($this->app->make(CommandMacro::class));

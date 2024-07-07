@@ -3,6 +3,7 @@
 namespace Modules\Core\Support\Traits;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Modules\Core\Http\Requests\UploadFileRequest;
 use Modules\Core\Support\Upload;
@@ -32,7 +33,7 @@ trait UploadTrait
 
     protected function upload(UploadedFile $file, $path)
     {
-        $res = (new Upload($this->disk))->upload($file, $path);
+        $res = (new Upload(Storage::disk($this->disk)))->upload($file, $path);
 
         return Response::success(['url' => $res['url']]);
     }

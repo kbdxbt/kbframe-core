@@ -6,6 +6,7 @@ namespace Modules\Core\Repositories;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Modules\Core\Support\Traits\CreateStaticable;
 
 abstract class BaseRepository
@@ -69,7 +70,7 @@ abstract class BaseRepository
 
     public function delete($keyValue, $isForce = false): void
     {
-        $keyValues = split_to_array($keyValue);
+        $keyValues = Str::split($keyValue);
 
         if ($isForce) {
             $this->query()->whereIn($this->getModel()->getKeyName(), $keyValues)->forceDelete();
@@ -80,14 +81,14 @@ abstract class BaseRepository
 
     public function recovery($ids): void
     {
-        $ids = split_to_array($ids);
+        $ids = Str::split($ids);
 
         $this->getModel()::withTrashed()->whereIn($this->getModel()->getKeyName(), $ids)->restore();
     }
 
     public function batchUpdateByKeyName($keyValue, $attributes): bool
     {
-        $keyValues = split_to_array($keyValue);
+        $keyValues = Str::split($keyValue);
 
         return $this->getModel()->update($attributes, [$this->getKeyName() => $keyValues]);
     }

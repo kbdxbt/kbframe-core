@@ -13,9 +13,9 @@ class Upload
 {
     protected Filesystem $filesystem;
 
-    public function __construct($driver)
+    public function __construct(Filesystem $filesystem)
     {
-        $this->filesystem = Storage::disk($driver);
+        $this->filesystem = $filesystem;
     }
 
     public function formatFileName($path = 'default', $filepath = '', $filename = '', $suffix = '', $format = ''): array|string
@@ -34,7 +34,7 @@ class Upload
     public static function generateFormatFileName($path = 'default', $filepath = '', $filename = '', $suffix = '', $format = ''): string
     {
         if (!$format) {
-            $format = '{path}/{date}/{filename}_{filesha1}{.suffix}';
+            $format = '{path}/{date}/{filename}_{random}{.suffix}';
         }
 
         $replaceArr = [
