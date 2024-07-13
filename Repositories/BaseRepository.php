@@ -68,6 +68,19 @@ abstract class BaseRepository
         return $model->fill($attributes)->save();
     }
 
+    public function updateOrInsert($attributes, $values = []): bool
+    {
+        if (! $id = $this->query()->where($attributes)->value('id')) {
+            return $this->create(array_merge($attributes, $values));
+        }
+
+        if (empty($values)) {
+            return true;
+        }
+
+        return $this->update($values, $id);
+    }
+
     public function delete($keyValue, $isForce = false): void
     {
         $keyValues = Str::split($keyValue);
