@@ -132,7 +132,11 @@ class CoreServiceProvider extends PackageServiceProvider
 
         Carbon::serializeUsing(static fn (Carbon $timestamp) => $timestamp->format('Y-m-d H:i:s'));
 
-        config(['app.export_page_size' => 5000]);
+        config([
+            'app.export_page_size' => 5000,
+            'app.max_exec_page' => 10000,
+            'app.max_exec_time' => 1800
+        ]);
 
         $this->app->bind('Illuminate\Pagination\LengthAwarePaginator', function ($app, $options) {
             return new LengthAwarePaginatorService($options['items'], $options['total'], $options['perPage'], $options['currentPage'], $options['options']);
