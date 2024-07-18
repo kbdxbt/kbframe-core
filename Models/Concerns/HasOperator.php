@@ -8,7 +8,7 @@ trait HasOperator
 
     const UPDATED_BY = 'updated_by';
 
-    public $operators = true;
+    public $operators = false;
 
     protected static $ignoreOperatorsOn = [];
 

@@ -22,6 +22,10 @@ final class ExplodeRule extends Rule
     {
         $values = explode(',', $value);
 
+        if (empty($values)) {
+            return false;
+        }
+
         foreach ($values as $val) {
             if ($this->type == 'number' && !is_numeric($val)) {
                 return false;

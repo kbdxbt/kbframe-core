@@ -24,15 +24,21 @@ class BaseModel extends Model
         parent::boot();
 
         self::creating(function (Model $model) {
-            $model->updateOperators();
+            if ($model->usesOperators()) {
+                $model->updateOperators();
+            }
         });
 
         self::updating(function (Model $model) {
-            $model->updateOperators();
+            if ($model->usesOperators()) {
+                $model->updateOperators();
+            }
         });
 
         self::saving(function (Model $model) {
-            $model->updateOperators();
+            if ($model->usesOperators()) {
+                $model->updateOperators();
+            }
         });
     }
 }

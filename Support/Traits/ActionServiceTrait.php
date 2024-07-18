@@ -41,9 +41,10 @@ trait ActionServiceTrait
         ], $params);
     }
 
-    public function getDetail($id): array
+    public function getDetail($keyValue, $keyName = ''): array
     {
-        $data = $this->repository->query()->find($id)?->toArray();
+        $keyName = $keyName ? : $this->repository->getModel()->getKeyName();
+        $data = $this->repository->query()->where([$keyName => $keyValue])->firstToArray();
         if (!$data) {
             throw new BadRequestException('没有找到符合条件的记录');
         }

@@ -24,7 +24,7 @@ abstract class BaseRepository
         $this->boot();
     }
 
-    public function boot(): void
+    protected function boot(): void
     {
     }
 
@@ -61,6 +61,13 @@ abstract class BaseRepository
         return $this->getModel()->fill($attributes)->save();
     }
 
+    public function insertById($attributes): int
+    {
+        $this->getModel()->fill($attributes)->save();
+
+        return $this->getId();
+    }
+
     public function update($attributes, $id): bool
     {
         $model = $this->query()->findOrFail($id);
@@ -81,29 +88,34 @@ abstract class BaseRepository
         return $this->update($values, $id);
     }
 
-    public function delete($keyValue, $isForce = false): void
+    public function delete($keyValue, $isForce = false, $keyName = ''): void
     {
         $keyValues = Str::split($keyValue);
+        $keyName = $keyName ? : $this->getModel()->getKeyName();
 
         if ($isForce) {
-            $this->query()->whereIn($this->getModel()->getKeyName(), $keyValues)->forceDelete();
+            $this->query()->whereIn($keyName, $keyValues)->forceDelete();
         } else {
-            $this->query()->whereIn($this->getModel()->getKeyName(), $keyValues)->delete();
+            $this->query()->whereIn($keyName, $keyValues)->delete();
         }
     }
 
-    public function recovery($ids): void
+    public function recovery($ids, $keyName = ''): void
     {
         $ids = Str::split($ids);
 
-        $this->getModel()::withTrashed()->whereIn($this->getModel()->getKeyName(), $ids)->restore();
+        $keyName = $keyName ? : $this->getModel()->getKeyName();
+
+        $this->getModel()::withTrashed()->whereIn($keyName, $ids)->restore();
     }
 
-    public function batchUpdateByKeyName($keyValue, $attributes): bool
+    public function batchUpdateByKeyName($keyValue, $attributes, $keyName = ''): int
     {
         $keyValues = Str::split($keyValue);
 
-        return $this->getModel()->update($attributes, [$this->getKeyName() => $keyValues]);
+        $keyName = $keyName ? : $this->getModel()->getKeyName();
+
+        return $this->query()->whereIn($keyName, $keyValues)->update($attributes);
     }
 
     public function getId(): int
