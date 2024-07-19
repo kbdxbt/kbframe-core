@@ -20,6 +20,7 @@ use Illuminate\Database\Query\Grammars\MySqlGrammar;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Grammars\Grammar;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\ChannelManager;
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Arr;
@@ -86,13 +87,6 @@ class CoreServiceProvider extends PackageServiceProvider
     }
 
     /**
-     * Boot the application events.
-     */
-    public function boot()
-    {
-    }
-
-    /**
      * Register the service provider.
      */
     public function register(): void
@@ -105,6 +99,9 @@ class CoreServiceProvider extends PackageServiceProvider
         $this->registerMacros();
         $this->listenEvents();
         $this->databaseQueryMonitoring();
+        $this->registerNotificationChannel();
+
+        parent::register();
     }
 
     /**
@@ -226,6 +223,18 @@ class CoreServiceProvider extends PackageServiceProvider
                 }
             }
         }
+    }
+
+    protected function registerNotificationChannel(): void
+    {
+        $this->app->make(ChannelManager::class)->extend('notify', function () {
+            return new class {
+                public function send($notifiable, $notification)
+                {
+                    $notification->toNotify();
+                }
+            };
+        });
     }
 
     /**
