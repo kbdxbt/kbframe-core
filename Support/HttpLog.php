@@ -3,8 +3,6 @@
 namespace Modules\Core\Support;
 
 use Illuminate\Support\Arr;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 abstract class HttpLog
 {
@@ -38,7 +36,7 @@ abstract class HttpLog
 
         if ($this->shouldLogHttp($request)) {
             if ($this->driver === 'mysql') {
-                \Modules\Core\Models\HttpLog::query()->create($collectData);
+                \Modules\System\Repositories\HttpLogRepository::make()->create($collectData);
             } else {
                 write_log('http_log', $collectData);
             }

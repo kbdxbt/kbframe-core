@@ -3,8 +3,6 @@
 namespace Modules\Core\Support;
 
 use Illuminate\Http\Client\Events\ResponseReceived;
-use Modules\Core\Support\CurlFormatter;
-use Modules\Core\Support\HttpLog;
 
 class ClientHttpLog extends HttpLog
 {

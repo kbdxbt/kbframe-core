@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Modules\Core\Http\Middleware;
 
-use Modules\Core\Support\CurlFormatter;
 use Modules\Core\Support\HttpLog;
 
 class RequestLog extends HttpLog
