@@ -68,7 +68,7 @@ class CoreServiceProvider extends PackageServiceProvider
      */
     protected $middleware = [
         'Core' => [
-            'log.http' => 'LogHttp',
+            'request.log' => 'RequestLog',
             'verify.signature' => 'VerifySignature',
         ],
     ];

@@ -89,6 +89,7 @@ class Upload
                 'size_byte' => File::size($file),
                 'size_info' => format_bytes(File::size($file)),
                 'url' => $url,
+                'ip' => request()->ip(),
             ]);
 
             $uploadFileModel->save();
