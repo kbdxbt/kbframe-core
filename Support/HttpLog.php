@@ -3,6 +3,7 @@
 namespace Modules\Core\Support;
 
 use Illuminate\Support\Arr;
+use Modules\System\Services\HttpLogService;
 
 abstract class HttpLog
 {
@@ -32,14 +33,10 @@ abstract class HttpLog
 
     protected function createHttpLog($request, $response): void
     {
-        $collectData = $this->collectData($request, $response);
+        $data = $this->collectData($request, $response);
 
         if ($this->shouldLogHttp($request)) {
-            if ($this->driver === 'mysql') {
-                \Modules\System\Repositories\HttpLogRepository::make()->create($collectData);
-            } else {
-                write_log('http_log', $collectData);
-            }
+            app(HttpLogService::class)->saveHttpLog($this->driver, $data);
         }
     }
 

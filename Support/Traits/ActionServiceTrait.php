@@ -16,7 +16,9 @@ trait ActionServiceTrait
 
         $this->repository->searchable($query, $params);
 
-        return $query->pageList($params)->toArray();
+        $result = $query->pageList($params)->toArray();
+
+        return $this->formatList($result);
     }
 
     public function cursorPageList($params, $isTotal = true): array
@@ -31,7 +33,7 @@ trait ActionServiceTrait
             $result['total'] = $query->count();
         }
 
-        return $result;
+        return $this->formatList($result);
     }
 
     public function saveData($params): void
@@ -96,5 +98,10 @@ trait ActionServiceTrait
                 return '';
             })->all()
         ])->export('php://output');
+    }
+
+    protected function formatList($data)
+    {
+        return $data;
     }
 }

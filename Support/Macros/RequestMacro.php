@@ -166,7 +166,9 @@ class RequestMacro
     public function validateInput(): callable
     {
         return function () {
-            return array_replace_recursive($this->input(), $this->validated());
+            $validated = method_exists($this, 'validated') ? $this->validated() : [];
+
+            return array_replace_recursive($this->input(), $validated);
         };
     }
 }
