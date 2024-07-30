@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Modules\Core\Support\Traits;
 
-use Modules\Core\Exceptions\BadRequestException;
-
 trait ActionServiceTrait
 {
     protected $repository;
@@ -57,18 +55,7 @@ trait ActionServiceTrait
     public function export($params): array
     {
         $params['page_size'] = config('app.export_page_size');
-        return $this->formatExportData($this->cursorPageList($params));
-    }
-
-    public function formatExportData($result): array
-    {
-        $result['data'] = collect($result['data'])->map(function ($item) {
-            return collect($this->repository->searchFields())->mapWithKeys(function ($label, $key) use ($item) {
-                return [$label => $item[$key] ?? ''];
-            });
-        })->all();
-
-        return $result;
+        return $this->formatListData($this->cursorPageList($params), 'label');
     }
 
     public function import($list): array
@@ -98,5 +85,16 @@ trait ActionServiceTrait
     protected function formatList($data)
     {
         return $data;
+    }
+
+    public function formatListData($result, $mapKey = 'key'): array
+    {
+        $result['data'] = collect($result['data'])->map(function ($item) use ($mapKey) {
+            return collect($this->repository->searchFields())->mapWithKeys(function ($label, $key) use ($item, $mapKey) {
+                return [($mapKey == 'key' ? $key : $label) => $item[$key] ?? ''];
+            });
+        })->all();
+
+        return $result;
     }
 }
