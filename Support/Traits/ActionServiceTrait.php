@@ -46,12 +46,7 @@ trait ActionServiceTrait
     public function getDetail($keyValue, $keyName = ''): array
     {
         $keyName = $keyName ? : $this->repository->getModel()->getKeyName();
-        $data = $this->repository->query()->where([$keyName => $keyValue])->firstToArray();
-        if (!$data) {
-            throw new BadRequestException('没有找到符合条件的记录');
-        }
-
-        return $data;
+        return $this->repository->query()->where([$keyName => $keyValue])->firstToArray();
     }
 
     public function deleteData($params): void
