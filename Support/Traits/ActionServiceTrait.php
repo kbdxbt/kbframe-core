@@ -16,7 +16,7 @@ trait ActionServiceTrait
 
         $result = $query->pageList($params)->toArray();
 
-        return $this->formatList($result);
+        return $this->formatListData($this->formatList($result));
     }
 
     public function cursorPageList($params, $isTotal = true): array
@@ -31,7 +31,7 @@ trait ActionServiceTrait
             $result['total'] = $query->count();
         }
 
-        return $this->formatList($result);
+        return $this->formatListData($this->formatList($result));
     }
 
     public function saveData($params): void
@@ -90,9 +90,13 @@ trait ActionServiceTrait
     public function formatListData($result, $mapKey = 'key'): array
     {
         $result['data'] = collect($result['data'])->map(function ($item) use ($mapKey) {
-            return collect($this->repository->searchFields())->mapWithKeys(function ($label, $key) use ($item, $mapKey) {
-                return [($mapKey == 'key' ? $key : $label) => $item[$key] ?? ''];
-            });
+            if ($searchFields = $this->repository->searchFields()) {
+                return collect($searchFields)->mapWithKeys(function ($label, $key) use ($item, $mapKey) {
+                    return [($mapKey == 'key' ? $key : $label) => $item[$key] ?? ''];
+                });
+            }
+
+            return $item;
         })->all();
 
         return $result;

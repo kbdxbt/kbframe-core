@@ -128,6 +128,11 @@ abstract class BaseRepository
         return $this->getModel()->getKeyName();
     }
 
+    public function searchFields(): array
+    {
+        return [];
+    }
+
     public static function __callStatic($method, $arguments)
     {
         return call_user_func_array([self::make(), $method], $arguments);
