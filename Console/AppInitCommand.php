@@ -7,6 +7,7 @@ namespace Modules\Core\Console;
 use Illuminate\Contracts\Console\Isolatable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Facades\Module;
 
 /**
  * @note command php artisan app:init --isolated # 单例执行
@@ -78,11 +79,15 @@ class AppInitCommand extends HealthCheckCommand implements Isolatable
     protected function execCommands(): bool
     {
         $resourceUsage = catch_resource_usage(function (): void {
+            $module = implode(' ', array_keys(Module::allEnabled()));
+
             $this->call('migrate');
             $this->call('db:seed');
             $this->call('key:generate');
             $this->call('jwt:secret');
             $this->call('storage:link');
+            $this->call('module:migrate ' . $module);
+            $this->call('module:seed ' . $module);
         });
 
         $this->output->success('Execute commands '.$resourceUsage);

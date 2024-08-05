@@ -130,6 +130,7 @@ class CoreServiceProvider extends PackageServiceProvider
         Carbon::serializeUsing(static fn (Carbon $timestamp) => $timestamp->format('Y-m-d H:i:s'));
 
         config([
+            'app.version' => env('APP_VERSION', '1.0.0'),
             'app.export_page_size' => 5000,
             'app.max_exec_page' => 10000,
             'app.max_exec_time' => 1800
