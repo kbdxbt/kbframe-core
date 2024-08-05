@@ -18,4 +18,9 @@ trait CreateStaticable
     {
         return new static(...$parameters);
     }
+
+    public static function instance(): static
+    {
+        return app(static::class);
+    }
 }

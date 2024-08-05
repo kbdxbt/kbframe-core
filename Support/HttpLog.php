@@ -36,7 +36,7 @@ abstract class HttpLog
         $data = $this->collectData($request, $response);
 
         if ($this->shouldLogHttp($request)) {
-            app(HttpLogService::class)->saveHttpLog($this->driver, $data);
+            HttpLogService::instance()->saveHttpLog($this->driver, $data);
         }
     }
 
